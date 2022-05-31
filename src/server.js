@@ -1,3 +1,4 @@
+const bodyParser = require('body-parser')
 const Prometheus = require('prom-client')
 const express = require('express');
 const http = require('http');
@@ -31,6 +32,8 @@ const server = http.createServer(app)
 // See: http://expressjs.com/en/4x/api.html#app.settings.table
 const PRODUCTION = app.get('env') === 'production';
 
+app.use(bodyParser.raw());
+
 // Administrative routes are not timed or logged, but for non-admin routes, pino
 // overhead is included in timing.
 app.get('/ready', (req, res) => res.status(200).json({status:"ok"}));
@@ -52,6 +55,12 @@ app.use(require('pino-http')({logger: pino}));
 app.get('/', (req, res) => {	
   // Use req.log (a `pino` instance) to log JSON:	
   req.log.info({message: 'Hello from Node.js Starter Application!'});		
+  res.send('Hello from Node.js Starter Application!');	
+});	
+
+app.post('/', (req, res) => {	
+  // Use req.log (a `pino` instance) to log JSON:	
+  req.log.info({message: 'post receiver',bodylength:req.body.length,body:req.body});		
   res.send('Hello from Node.js Starter Application!');	
 });	
 
